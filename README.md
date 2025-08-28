@@ -1,6 +1,6 @@
 # Kizingiti: Huru Escape
 
-![Game Screenshot](https://raw.githubusercontent.com/your-username/your-repo-name/main/screenshot.png) **Play the game live here:** [https://your-username.github.io/your-repo-name/](https://your-username.github.io/your-repo-name/)
+![Game Screenshot](https://raw.githubusercontent.com/your-username/your-repo-name/main/screenshot.png) **Play the game live here:** [https://your-username.github.io/your-repo-name/](http://africa-25.github.io/KIZINGITI-HURU-ESCAPE/)
 
 ### About the Game
 Kizingiti: Huru Escape is a Pan-African critical thinking game designed to prevent and counter violent extremism (P/CVE). The game's name is inspired by Swahili, where "Kizingiti" means *threshold* and "Huru" means *free*.

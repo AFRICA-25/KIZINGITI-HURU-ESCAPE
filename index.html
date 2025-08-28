@@ -18,6 +18,19 @@
     }
     *{box-sizing:border-box}
     body{margin:0;background:linear-gradient(160deg,#0b1024,#0f172a 30%,#111827 70%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;min-height:100vh;}
+    <script>
+  // ✅ Session codes you allow
+  const validCodes = ["NAIROBI2025", "YOUTHPEACE", "AFRICAHURU"];
+
+  // Ask player for session code
+  let code = prompt("Enter Session Code to Access KIZINGITI: Huru Escape");
+
+  // If wrong code, block access
+  if (!validCodes.includes(code)) {
+    document.body.innerHTML = "<h2 style='color:red;text-align:center;margin-top:20%;'>❌ Access Denied! Invalid Session Code.</h2>";
+  }
+</script>
+
     .wrap{max-width:1100px;margin:0 auto;padding:24px}
     .card{background:linear-gradient(180deg,#111827,#0b1024);border:1px solid rgba(255,255,255,.06);box-shadow:0 10px 35px rgba(0,0,0,.5);border-radius:20px;padding:20px}
     h1{font-size:clamp(28px,3.8vw,42px);letter-spacing:0.5px;margin:0 0 10px}

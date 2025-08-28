@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KIZINGITI: Huru Escape</title>
+  <style>
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --card:#111827; /* gray-900 */
+      --muted:#94a3b8; /* slate-400 */
+      --text:#e5e7eb; /* gray-200 */
+      --accent:#22c55e; /* green-500 */
+      --accent-2:#f59e0b; /* amber-500 */
+      --danger:#ef4444; /* red-500 */
+      --door:#1f2937; /* gray-800 */
+      --door-lit:#10b981; /* emerald-500 */
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(160deg,#0b1024,#0f172a 30%,#111827 70%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;min-height:100vh;}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .card{background:linear-gradient(180deg,#111827,#0b1024);border:1px solid rgba(255,255,255,.06);box-shadow:0 10px 35px rgba(0,0,0,.5);border-radius:20px;padding:20px}
+    h1{font-size:clamp(28px,3.8vw,42px);letter-spacing:0.5px;margin:0 0 10px}
+    .subtitle{color:var(--muted);margin-bottom:16px}
+    .grid{display:grid;gap:16px}
+    @media(min-width:900px){.grid-2{grid-template-columns:1.2fr .8fr}}
+    .btn{appearance:none;border:1px solid rgba(255,255,255,.12);padding:12px 16px;border-radius:14px;background:#0b1228;color:var(--text);cursor:pointer;font-weight:650}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.35)}
+    .btn.primary{background:linear-gradient(90deg,#10b981,#22c55e);border:none;color:#072b19}
+    .btn.warn{background:linear-gradient(90deg,#f59e0b,#fbbf24);border:none;color:#251a02}
+    .btn.ghost{background:transparent}
+    input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:#0a1226;color:var(--text)}
+    label{font-size:14px;color:#b6c1d1}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{border:1px dashed rgba(255,255,255,.18);border-radius:999px;padding:6px 10px;color:#b6c1d1;font-size:12px}
+    .scene{position:relative;min-height:320px;border-radius:18px;background:radial-gradient(120% 100% at 50% 100%,#040813 0%,#0b1226 40%,#0b1024 100%);border:1px solid rgba(255,255,255,.06);overflow:hidden}
+    .characters{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;align-items:end;padding:16px}
+    .char{display:flex;gap:12px;align-items:center}
+    .avatar{width:88px;height:88px;border-radius:16px;background:#0e1328;border:1px solid rgba(255,255,255,.1);position:relative}
+    .avatar svg{position:absolute;inset:0;width:100%;height:100%}
+    .speech{background:#0f1b38;border:1px solid rgba(255,255,255,.1);padding:10px 12px;border-radius:12px;max-width:70%}
+    .speech h3{margin:0 0 4px;font-size:14px;color:#cbd5e1}
+    .speech p{margin:0;font-size:13px;color:#aab8d0}
+    .hud{display:flex;justify-content:space-between;align-items:center;margin:10px 0 0}
+    .hearts span{display:inline-block;width:18px;height:18px;margin-right:6px;background:var(--danger);clip-path:path('M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.59C11.53 5.01 13.2 4 14.94 4 17.44 4 19.44 6 19.44 8.5c0 3.78-3.4 6.86-8.11 11.54L12 21.35z')}
+    .door{position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:220px;height:280px;background:linear-gradient(180deg,#111827,#1f2937);border:1px solid rgba(255,255,255,.1);border-radius:18px 18px 0 0;box-shadow:0 -10px 60px rgba(16,185,129,.15) inset}
+    .door .window{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:80px;height:60px;border:2px solid rgba(255,255,255,.2);border-radius:10px;background:#0a1326}
+    .door .knob{position:absolute;right:18px;top:140px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+    .door.open{background:linear-gradient(180deg,#0e1b38,#0b1226);box-shadow:0 -10px 120px rgba(34,197,94,.45) inset}
+    .qwrap{margin-top:14px}
+    .option{display:block;margin:10px 0;border:1px solid rgba(255,255,255,.12);padding:12px 14px;border-radius:12px;background:#0a1326;cursor:pointer}
+    .option.correct{border-color:rgba(34,197,94,.7)}
+    .option.wrong{border-color:rgba(239,68,68,.7)}
+    .lifelines{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .kudos{display:none;text-align:center;padding:30px}
+    .kudos.show{display:block}
+    .badend{display:none;text-align:center;padding:30px}
+    .badend.show{display:block}
+    .hidden{display:none}
+    .footer{opacity:.7;font-size:12px;margin-top:16px}
+    .small{font-size:12px;color:#9fb0c9}
+    .tag{font-size:11px;background:#0b1228;border:1px solid rgba(255,255,255,.12);padding:4px 8px;border-radius:999px;margin-right:6px}
+    .mx-auto{margin-left:auto;margin-right:auto}
+    .center{text-align:center}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>🇰🇪 KIZINGITI: <span style="color:var(--accent)">Huru Escape</span></h1>
+      <div class="subtitle">A Pan‑African critical thinking game on preventing & countering violent extremism (P/CVE). "Kizingiti" means <em>threshold</em> — cross it to become <strong>Huru</strong> (free).</div>
+      <div class="grid grid-2">
+        <div>
+          <div class="scene" id="scene">
+            <div class="door" id="door">
+              <div class="window"></div>
+              <div class="knob"></div>
+            </div>
+            <div class="characters">
+              <div class="char">
+                <div class="avatar" title="Extremist recruiter (silhouette)">
+                  <!-- Silhouette recruiter -->
+                  <svg viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="g1" cx="50%" cy="10%" r="80%"><stop offset="0%" stop-color="#0b1226"/><stop offset="100%" stop-color="#020614"/></radialGradient></defs><rect width="120" height="120" fill="url(#g1)"/><circle cx="60" cy="38" r="16" fill="#0c1224"/><rect x="32" y="58" width="56" height="44" rx="10" fill="#0c152b"/><rect x="26" y="74" width="68" height="26" rx="10" fill="#0a1122"/></svg>
+                </div>
+                <div class="speech">
+                  <h3>Recruiter</h3>
+                  <p id="recruiterLine">Answer wisely. Each correct choice unlocks a door.</p>
+                </div>
+              </div>
+              <div class="char" style="justify-self:end">
+                <div class="speech">
+                  <h3>Youth</h3>
+                  <p id="youthLine">I choose critical thinking over manipulation.</p>
+                </div>
+                <div class="avatar" title="Youth (hopeful)">
+                  <!-- Youth -->
+                  <svg viewBox="0 0 120 120" aria-hidden="true"><defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0%" stop-color="#12234a"/><stop offset="100%" stop-color="#0f1b38"/></linearGradient></defs><rect width="120" height="120" fill="url(#g2)"/><circle cx="60" cy="38" r="16" fill="#1f2f5a"/><rect x="32" y="58" width="56" height="44" rx="10" fill="#1a2a52"/><rect x="26" y="74" width="68" height="26" rx="10" fill="#16264a"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hud">
+            <div>
+              <span class="tag" id="sessionTag">No Session</span>
+              <span class="tag" id="modeTag">Mode: Pre‑Webinar</span>
+              <span class="tag" id="progressTag">Door 0/0</span>
+            </div>
+            <div class="hearts" id="hearts"></div>
+          </div>
+          <div class="qwrap" id="qwrap"></div>
+          <div class="lifelines">
+            <button class="btn ghost" id="hintBtn">🪔 Call Elder (Hint)</button>
+            <button class="btn ghost" id="fiftyBtn">🔎 Fact Check (50/50)</button>
+            <button class="btn ghost" id="skipBtn">🗝️ Bypass (Skip)</button>
+          </div>
+          <div class="kudos" id="kudos">
+            <h2>🎉 Hongera! You are <span style="color:var(--accent)">HURU</span>!</h2>
+            <p class="small">You used critical thinking to escape manipulation and choose peace. Share your code with others!</p>
+            <div class="row" style="justify-content:center">
+              <button class="btn primary" id="playAgain">Play Again</button>
+              <button class="btn warn" id="downloadCSV">Export Session Results (CSV)</button>
+            </div>
+          </div>
+          <div class="badend" id="badend">
+            <h2>⛓️ Captured.</h2>
+            <p class="small">The recruiter overpowered you this time. Review the explanations and try again — wisdom grows with practice.</p>
+            <div class="row" style="justify-content:center">
+              <button class="btn primary" id="retry">Try Again</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="background:#0a1226">
+            <h3 style="margin-top:0">Set Up</h3>
+            <label>Player name</label>
+            <input id="playerName" placeholder="e.g., Amina" />
+            <div style="height:8px"></div>
+            <label>Facilitator session code</label>
+            <input id="sessionCode" placeholder="e.g., NAIROBI-2025" />
+            <div style="height:8px"></div>
+            <label>Mode</label>
+            <select id="mode">
+              <option value="pre">Pre‑Webinar</option>
+              <option value="post">Post‑Webinar</option>
+            </select>
+            <div style="height:12px"></div>
+            <button class="btn primary" id="startBtn">Start Game</button>
+            <div style="height:10px"></div>
+            <div class="small">Share the same <strong>session code</strong> with participants to play the identical pathway and join the same results list.</div>
+          </div>
+          <div class="card" style="margin-top:16px;background:#0a1226">
+            <h3 style="margin-top:0">Facilitator Tools</h3>
+            <div class="row">
+              <button class="btn" id="viewResults">View Results</button>
+              <button class="btn" id="clearResults">Clear This Session</button>
+            </div>
+            <div id="resultsTable" class="small" style="margin-top:10px;max-height:260px;overflow:auto;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px"></div>
+          </div>
+          <div class="footer small">
+            🇿🇦🇰🇪🇳🇬🇬🇭🇹🇿 Pan‑African edition. No data leaves your browser. Edit or add questions inside the file (look for <code>QUESTION_BANK</code>).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // --- Utilities ---
+  const $ = sel => document.querySelector(sel);
+  const el = (tag, cls, html) => { const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; };
+
+  // Simple deterministic PRNG from string seed (xorshift-ish)
+  function seededRandom(seedStr){
+    let h=2166136261>>>0; for(let i=0;i<seedStr.length;i++){h^=seedStr.charCodeAt(i); h=Math.imul(h,16777619);} let x=h||123456789;
+    return ()=>{x^=x<<13; x^=x>>>17; x^=x<<5; return ((x>>>0)%1e9)/1e9}
+  }
+  function shuffle(arr, rand){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()* (i+1)); [a[i],a[j]]=[a[j],a[i]];} return a }
+
+  // --- Question bank ---
+  // Each item: { q, options:[...], answer: index, hint, explain, tags:["bias","digital","community"], mode:"pre"|"post"|"both" }
+  const QUESTION_BANK = [
+    // PRE & BOTH
+    {q:"A stranger in your DMs says: 'They don't respect people like us. Join our private group tonight. We'll make them listen.' What's your first wise step?", options:["Share your phone number to learn more","Ask a trusted adult/mentor and report the account","Join quietly to observe their plans","Reshare their message to your friends"], answer:1, hint:"Think safety + verification.", explain:"Consulting a mentor and reporting reduces risk and interrupts the recruitment pipeline.", tags:["safety","reporting"], mode:"both"},
+    {q:"A video uses dramatic music and quick cuts of injustice, then ends with: 'Only action now will bring dignity.' Which tactic is MOST likely at play?", options:["Financial incentive","Authority bias","Emotional manipulation / urgency","Scientific evidence"], answer:2, hint:"What are the feelings it triggers?", explain:"Urgency + emotion can bypass reasoning, a classic manipulation technique.", tags:["media","bias"], mode:"both"},
+    {q:"Your friend forwards a rumor that a certain group will attack the market tomorrow. What's the best response?", options:["Forward to warn everyone","Post on your status with a disclaimer","Verify with official sources and local leaders before sharing","Ignore it completely"], answer:2, hint:"Slow is smooth, smooth is safe.", explain:"Verification with official/local sources prevents panic and rumor‑fuelled harm.", tags:["verification","rumor"], mode:"both"},
+    {q:"An online recruiter offers cash if you attend a 'training'. They ask for your ID and bank details. What is the red flag?", options:["They spelled your name right","They promised a meal","They asked for sensitive personal data","They said training is in your town"], answer:2, hint:"What shouldn't you share online?", explain:"Sensitive personal data should not be shared; scammers and recruiters often harvest it.", tags:["privacy","finance"], mode:"pre"},
+    {q:"A speaker claims: 'All members of X group are corrupt.' Which thinking error is this?", options:["Cherry picking","Hasty generalization / stereotyping","Appeal to tradition","Ad hominem"], answer:1, hint:"Too broad, too fast.", explain:"Painting a whole group with one brush is stereotyping, a hasty generalization.", tags:["bias"], mode:"both"},
+    {q:"You're angry after a real injustice. A contact says, 'If you truly care, you'll prove it tonight.' Which boundary keeps you safe?", options:["Go along to see what happens","Set a cooling‑off period and speak to a mentor","Block your feelings","Give them your location so they trust you"], answer:1, hint:"Time + counsel.", explain:"Cooling off and seeking counsel reduces hot‑state choices that recruiters exploit.", tags:["self‑regulation"], mode:"both"},
+    {q:"Someone shares a slick 'charity' link with no physical address, demanding crypto only. What's prudent?", options:["Donate a small amount first","Ask friends to donate too","Check registrations and independent reviews; avoid paying until verified","Send airtime instead"], answer:2, hint:"Trust, then verify.", explain:"Legitimate initiatives have verifiable presence and accountability.", tags:["due diligence"], mode:"pre"},
+    {q:"Your cousin posts a meme mocking a minority after a tense incident. Best de‑escalating reply?", options:["Publicly shame them","Ignore it and unfollow","Private message expressing concern, share facts, invite dialogue","Post a counter‑meme mocking them back"], answer:2, hint:"Dignity + dialogue.", explain:"Private, respectful correction preserves dignity and can change minds.", tags:["dialogue","respect"], mode:"both"},
+    {q:"Which action MOST strengthens community resilience to violent extremism?", options:["Centralizing all decisions with one leader","Building youth networks for service, sports, and arts","Banning all online debates","Only trusting your ethnic group"], answer:1, hint:"Bridges, not walls.", explain:"Positive peer networks create belonging and prosocial outlets.", tags:["community"], mode:"both"},
+    {q:"A voice note says security forces are attacking a neighborhood right now; the audio is low‑quality. What should you check first?", options:["Date/time and geolocation evidence","How many forwards it has","Sender's profile picture","If it aligns with your beliefs"], answer:0, hint:"Metadata matters.", explain:"Check time, place, source. Old or mislocated clips often resurface to inflame tensions.", tags:["OSINT","verification"], mode:"post"},
+    {q:"A recruiter flatters you: 'You are brave, not like the sheep.' Which tactic?", options:["Scarcity","Love‑bombing / identity boosting","Data transparency","Humor"], answer:1, hint:"Ego pull.", explain:"Love‑bombing uses praise to hook identity and loyalty.", tags:["manipulation"], mode:"both"},
+    {q:"In a heated chat, which message most models nonviolent leadership?", options:["'Meet me and we'll show them force.'","'Let's verify facts, cool down 24h, then plan lawful action.'","'They started it; we finish it.'","'Silence them at all costs.'"], answer:1, hint:"Lawful, factual, calm.", explain:"Cooling off + verification + lawful action = responsible leadership.", tags:["leadership","nonviolence"], mode:"both"},
+    // POST extras
+    {q:"You spot a bot network amplifying a harmful hashtag. Best counter?", options:["Yell at the bots","Organize positive storytelling and flood with verified information","Report nothing; it's free speech","Create a rival hate hashtag"], answer:1, hint:"Build, don't burn.", explain:"Positive, factual narratives and reporting reduce oxygen to harmful campaigns.", tags:["counter‑narrative"], mode:"post"},
+    {q:"Someone shares a clip cropped to remove context. What low‑tech check helps fastest?", options:["Reverse image/video search","Ask your neighbor","Count the likes","Translate it"], answer:0, hint:"Look for originals.", explain:"Reverse search can reveal earlier uncropped versions and original sources.", tags:["OSINT"], mode:"post"},
+    {q:"A leader says ends justify any means. Your response?", options:["Agree if the cause is noble","Means matter; advocate lawful, rights‑respecting options","Avoid the topic","Test it violently"], answer:1, hint:"Ethics guardrails.", explain:"P/CVE prioritizes lawful, rights‑respecting means; violence erodes legitimacy.", tags:["ethics"], mode:"post"},
+    {q:"Friend in crisis says recruiter offered 'family' and protection. Best immediate support?", options:["Lecture them","Connect them to local support (counselor, faith leader, hotline) and stay present","Tell them it's their choice","Expose them publicly"], answer:1, hint:"Belonging + services.", explain:"Warm referral + accompaniment meets needs recruiters exploit.", tags:["support","referral"], mode:"both"},
+    {q:"During protests, someone urges bringing weapons for 'defense'. Safer alternative?", options:["Bring bigger weapons","Stay home always","Organize marshals, de‑escalation teams, legal observers; coordinate with authorities","Go alone"], answer:2, hint:"Plan safety.", explain:"Nonviolent discipline + safety planning reduces harm and protects rights.", tags:["protest","safety"], mode:"post"},
+    {q:"Which password practice protects against doxxing?", options:["Same password everywhere","Short memorable words","Unique long passphrases + 2FA","Sharing with best friend"], answer:2, hint:"Layers.", explain:"Long unique passphrases and 2FA harden accounts against takeover.", tags:["digital"], mode:"both"},
+    {q:"A voice promises secret 'higher truth' only the chosen know. You should…", options:["Feel special and comply","Ask for external evidence and diverse perspectives","Cut off all old friends","Send money to prove loyalty"], answer:1, hint:"Evidence over ego.", explain:"Cult‑style exclusivity is a red flag; seek evidence and plurality.", tags:["cult","critical thinking"], mode:"both"},
+    {q:"Local rumor blames one ethnicity for a crime. Constructive action?", options:["Share names online","Organize an interfaith/youth dialogue with facilitators and verified updates","Threaten retaliation","Celebrate the rumor"], answer:1, hint:"Bridge‑building.", explain:"Dialogue plus verified information lowers temperature and prevents scapegoating.", tags:["cohesion"], mode:"both"},
+    {q:"Your team drafts a community project. What boosts resilience most?", options:["Short‑term handouts only","Youth‑led service mapped to local needs with accountability","No monitoring","Exclude women"], answer:1, hint:"Agency + accountability.", explain:"Youth‑led, accountable projects build trust and belonging.", tags:["resilience"], mode:"post"},
+  ];
+
+  // --- State ---
+  const state = {
+    maxHearts:3,
+    hearts:3,
+    step:0,
+    order:[],
+    items:[],
+    rand:null,
+    session:"",
+    mode:"pre",
+    player:"",
+    used:{hint:false,fifty:false,skip:false},
+    results:[],
+    startTime:null
+  };
+
+  // --- DOM Refs ---
+  const heartsEl = $('#hearts');
+  const qwrap = $('#qwrap');
+  const door = $('#door');
+  const sessionTag = $('#sessionTag');
+  const modeTag = $('#modeTag');
+  const progressTag = $('#progressTag');
+  const kudos = $('#kudos');
+  const badend = $('#badend');
+  const recruiterLine = $('#recruiterLine');
+  const youthLine = $('#youthLine');
+
+  function setHearts(n){ heartsEl.innerHTML=''; for(let i=0;i<n;i++){ heartsEl.appendChild(el('span')); } }
+
+  function pickQuestions(){
+    const pool = QUESTION_BANK.filter(x=> x.mode==='both' || x.mode===state.mode);
+    const r = state.rand;
+    const shuffled = shuffle(pool, r);
+    // Choose 8 doors by default
+    return shuffled.slice(0,8);
+  }
+
+  function renderQuestion(){
+    if(state.step>=state.items.length){ return win(); }
+    const item = state.items[state.order[state.step]];
+    progressTag.textContent = `Door ${state.step+1}/${state.items.length}`;
+    door.classList.remove('open');
+    qwrap.innerHTML='';
+
+    const q = el('div');
+    q.innerHTML = `<div style="font-size:18px;margin-bottom:8px">${item.q}</div>`;
+    const optWrap = el('div');
+
+    item.options.forEach((op,idx)=>{
+      const b = el('button','option',op);
+      b.addEventListener('click',()=>handleAnswer(idx,item,b));
+      optWrap.appendChild(b);
+    });
+
+    const hint = el('div','small',`Hint: ${item.hint}`); hint.style.display='none';
+    const explain = el('div','small',`Why: ${item.explain}`); explain.style.display='none'; explain.style.marginTop='6px';
+
+    qwrap.appendChild(q);
+    qwrap.appendChild(optWrap);
+    qwrap.appendChild(hint);
+    qwrap.appendChild(explain);
+
+    // Lifelines
+    $('#hintBtn').disabled = state.used.hint;
+    $('#fiftyBtn').disabled = state.used.fifty;
+    $('#skipBtn').disabled = state.used.skip;
+
+    $('#hintBtn').onclick = ()=>{ if(!state.used.hint){ state.used.hint=true; hint.style.display='block'; $('#hintBtn').disabled=true; recruiterLine.textContent='Even elders carry lamps for the dark path…'; }}
+    $('#fiftyBtn').onclick = ()=>{
+      if(!state.used.fifty){ state.used.fifty=true; $('#fiftyBtn').disabled=true; const wrongIdx = [0,1,2,3].filter(i=>i!==item.answer); const rIdx = shuffle(wrongIdx, state.rand).slice(0,2); [...optWrap.children].forEach((btn,i)=>{ if(rIdx.includes(i)){ btn.disabled=true; btn.style.opacity=.5; }}); youthLine.textContent='Facts remain when noise fades.'; }
+    }
+    $('#skipBtn').onclick = ()=>{ if(!state.used.skip){ state.used.skip=true; $('#skipBtn').disabled=true; door.classList.add('open'); nextStep(); }}
+  }
+
+  function handleAnswer(idx,item,btn){
+    const explain = qwrap.querySelectorAll('.small')[1];
+    if(idx===item.answer){
+      btn.classList.add('correct');
+      door.classList.add('open');
+      recruiterLine.textContent = 'The door yields to clarity…';
+      youthLine.textContent = 'Truth opens paths.';
+      setTimeout(()=>{ nextStep(); }, 650);
+    } else {
+      btn.classList.add('wrong');
+      state.hearts--; setHearts(state.hearts);
+      recruiterLine.textContent = 'Doubt traps the unwary.';
+      youthLine.textContent = 'I learn. I try again.';
+      explain.style.display='block';
+      if(state.hearts<=0){ lose(); }
+    }
+  }
+
+  function nextStep(){
+    state.step++;
+    if(state.step>=state.items.length){ win(); } else { renderQuestion(); }
+  }
+
+  function win(){
+    qwrap.innerHTML='';
+    kudos.classList.add('show');
+    badend.classList.remove('show');
+    saveResult(true);
+    confetti();
+  }
+  function lose(){
+    qwrap.innerHTML='';
+    badend.classList.add('show');
+    kudos.classList.remove('show');
+    saveResult(false);
+  }
+
+  function startGame(){
+    // state from inputs
+    state.player = $('#playerName').value.trim()||'Player';
+    state.session = ($('#sessionCode').value.trim()||'DEFAULT').toUpperCase();
+    state.mode = $('#mode').value; // 'pre' or 'post'
+
+    state.rand = seededRandom(state.session + '|' + state.mode);
+    state.items = pickQuestions();
+    state.order = Array.from({length:state.items.length},(_,i)=>i);
+    state.order = shuffle(state.order,state.rand);
+    state.hearts = state.maxHearts; setHearts(state.hearts);
+    state.step = 0; state.used={hint:false,fifty:false,skip:false};
+    state.startTime=Date.now();
+
+    // HUD
+    sessionTag.textContent = `Session: ${state.session}`;
+    modeTag.textContent = `Mode: ${state.mode==='pre'?'Pre‑Webinar':'Post‑Webinar'}`;
+    progressTag.textContent = `Door 0/${state.items.length}`;
+    kudos.classList.remove('show'); badend.classList.remove('show');
+
+    renderQuestion();
+    recruiterLine.textContent='Answer wisely. Each correct choice unlocks a door.';
+    youthLine.textContent='I choose critical thinking over manipulation.';
+    door.classList.remove('open');
+  }
+
+  function saveResult(won){
+    const key = 'KIZINGITI_RESULTS_'+state.session;
+    const prev = JSON.parse(localStorage.getItem(key)||'[]');
+    const timeSec = Math.round((Date.now()-state.startTime)/1000);
+    const rec = {name:state.player, won, mode:state.mode, score: won? state.items.length : state.step, heartsLeft: state.hearts, timeSec, date:new Date().toISOString()};
+    prev.push(rec);
+    localStorage.setItem(key, JSON.stringify(prev));
+    state.results = prev;
+    renderResults();
+  }
+
+  function renderResults(){
+    const key = 'KIZINGITI_RESULTS_'+state.session;
+    const arr = JSON.parse(localStorage.getItem(key)||'[]');
+    state.results = arr;
+    const box = $('#resultsTable');
+    if(arr.length===0){ box.innerHTML='<div class="small">No results yet for this session code.</div>'; return; }
+    const rows = arr.map((r,i)=>`<tr><td>${i+1}</td><td>${r.name}</td><td>${r.mode}</td><td>${r.won? 'HURU':'Captured'}</td><td>${r.score}</td><td>${r.heartsLeft}</td><td>${r.timeSec}s</td><td>${new Date(r.date).toLocaleString()}</td></tr>`).join('');
+    box.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr><th>#</th><th>Name</th><th>Mode</th><th>Outcome</th><th>Doors</th><th>Hearts</th><th>Time</th><th>When</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function downloadCSV(){
+    const key = 'KIZINGITI_RESULTS_'+state.session;
+    const arr = JSON.parse(localStorage.getItem(key)||'[]');
+    if(arr.length===0){ alert('No results for this session.'); return; }
+    const headers = ['name','mode','outcome','doors','heartsLeft','timeSec','date'];
+    const lines = [headers.join(',')].concat(arr.map(r=>{
+      return [r.name,r.mode,(r.won?'HURU':'Captured'),r.score,r.heartsLeft,r.timeSec,r.date].join(',');
+    }));
+    const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = el('a'); a.href=url; a.download=`KIZINGITI_${state.session}.csv`; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
+  }
+
+  // Minimal confetti
+  function confetti(){
+    const count = 140;
+    for(let i=0;i<count;i++){
+      const c = el('div');
+      c.style.position='fixed'; c.style.top='-10px'; c.style.left=(Math.random()*100)+'%';
+      c.style.width='6px'; c.style.height='10px';
+      c.style.background = ['#22c55e','#f59e0b','#eab308','#06b6d4','#e11d48'][Math.floor(Math.random()*5)];
+      c.style.opacity='0.9'; c.style.borderRadius='2px'; c.style.transform=`rotate(${Math.random()*360}deg)`;
+      c.style.zIndex=9999; document.body.appendChild(c);
+      const duration = 1200 + Math.random()*1200;
+      const translateX = (Math.random()*2-1)*200;
+      c.animate([{transform:c.style.transform, top:'-10px'},{transform:`${c.style.transform} translateX(${translateX}px)`, top:'110vh'}],{duration, easing:'ease-out'}).onfinish=()=>c.remove();
+    }
+  }
+
+  // --- Wire up ---
+  $('#startBtn').addEventListener('click', startGame);
+  $('#playAgain').addEventListener('click', startGame);
+  $('#retry').addEventListener('click', startGame);
+  $('#downloadCSV').addEventListener('click', downloadCSV);
+  $('#viewResults').addEventListener('click', renderResults);
+  $('#clearResults').addEventListener('click', ()=>{
+    const code = ($('#sessionCode').value.trim()||'DEFAULT').toUpperCase();
+    if(!confirm(`Clear results for session ${code}?`)) return;
+    localStorage.removeItem('KIZINGITI_RESULTS_'+code); renderResults();
+  });
+
+  // Initial
+  setHearts(state.hearts); renderResults();
+  </script>
+</body>
+</html>
